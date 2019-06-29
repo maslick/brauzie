@@ -1,6 +1,6 @@
 {
   "name": "@maslick/brauzie",
-  "version": "1.1.7",
+  "version": "1.1.9",
   "description": "Awesome CLI for fetching JWT tokens for public OAuth2.0 clients",
   "main": "index.js",
   "author": "Pavel Maslov",
