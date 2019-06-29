@@ -17,21 +17,21 @@ npm i -g @maslick/brauzie
 
 ## Usage
 First, set your configuration via environment variables:
-```
+```bash
 export BRAUZIE_KC_URL=http://auth.maslick.ru
 export BRAUZIE_REALM=brauzie
 export BRAUZIE_CLIENT_ID=web
 ```
 
 Then you can login/logout:
-```
+```bash
 brauzie login
 brauzie login --quite
 brauzie logout
 ```
 *Brauzie* uses the **Authorization Code flow** (see the OAuth2.0 [specs](https://oauth.net/2/grant-types/authorization-code/)).
 After you execute the ``login`` command, *Brauzie* will open up a browser window where you will have to login to your public OIDC client with username/password. Then it will exchange the ``authorization_code`` for the JWT token and save it to ``~/.brauzie/jwt.json``:
-```
+```bash
 cat ~/.brauzie/jwt.json
 {
   "access_token": "xxxxx.yyyyy.zzzzz",
@@ -47,7 +47,7 @@ cat ~/.brauzie/jwt.json
 ```
 Unless ``--quite`` is specified, *Brauzie* will output the ``access_token`` to stdout.
 It will also put the decoded ``id_token`` to ``~/.brauzie/id-token.json``:
-```
+```bash
 cat ~/.brauzie/id-token.json
 {
   "jti": "fffd0c04-f971-4328-8116-fa4cbabd4978",
@@ -78,22 +78,22 @@ Logout will invalidate the current user session and delete the contents of the `
 
 
 ## Advanced usage
-```
+```bash
 export TOKEN=`brauzie login`
 curl -H "Authorization: Bearer $TOKEN" htts://example.com
 ```
 
-```
+```bash
 cat ~/.brauzie | jq -r '.access_token'
 cat ~/.brauzie | jq -r '.refresh_token'
 ```
 
-```
+```bash
 TOKEN=$(cat ~/.brauzie/jwt.json | jq -r '.access_token') 
 http http://httpbin.org/get  "Authorization: Bearer $TOKEN"
 ```
 
-```
+```bash
 echo $(cat ~/.brauzie/id-token.json | jq -r '.name')
 ```
 
