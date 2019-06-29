@@ -28,7 +28,7 @@ brauzie login
 brauzie logout
 ```
 *Brauzie* uses the **Authorization Code flow** (see the OAuth2.0 [specs](https://oauth.net/2/grant-types/authorization-code/)).
-After launching the ``login`` command *Brauzie* will open up a browser window where you have to login to your public OIDC client. Then it will exchange the ``authorization_code`` for the JWT token and save it to ``~/.brauzie``:
+After you execute the ``login`` command, *Brauzie* will open up a browser window where you have to log in to your public OIDC client with username/password. Then it will exchange the ``authorization_code`` for the JWT token and save it to ``~/.brauzie``:
 ```
 {
   "access_token": "xxxxx.yyyyy.zzzzz",
