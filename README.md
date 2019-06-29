@@ -36,6 +36,7 @@ After launching the ``login`` command *Brauzie* will open up a browser window wh
   "refresh_expires_in": 1800,
   "refresh_token": "zzzzz.yyyyy.xxxxx",
   "token_type": "bearer",
+  "id_token": "aaaaa.bbbbb.ccccc",
   "not-before-policy": 0,
   "session_state": "620a5ee7-1596-4669-ac7a-115738f2210c",
   "scope": "profile email"

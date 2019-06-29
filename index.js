@@ -24,7 +24,7 @@ if (argv._[0] === "login") {
         const redirectUrl = "http://localhost:" + PORT + authEndpoint;
 
         (async () => {
-            await open(baseUrl + '/auth?client_id=' + client_id + '&response_type=code&redirect_uri=' + redirectUrl);
+            await open(baseUrl + '/auth?scope=openid&client_id=' + client_id + '&response_type=code&redirect_uri=' + redirectUrl);
         })();
 
         app.get(authEndpoint, (req, res) => {
