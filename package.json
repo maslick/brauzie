@@ -1,6 +1,6 @@
 {
   "name": "@maslick/brauzie",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Awesome CLI for fetching JWT tokens for public OAuth2.0 clients",
   "main": "index.js",
   "author": "Pavel Maslov",
@@ -21,10 +21,12 @@
   "keywords": [
     "keycloak",
     "jwt",
+    "oidc",
     "oauth2",
     "cli",
     "token",
-    "node.js"
+    "node.js",
+    "k8s"
   ],
   "bugs": {
     "url": "https://github.com/maslick/brauzie/issues"

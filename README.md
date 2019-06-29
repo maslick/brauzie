@@ -7,8 +7,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 
-*Brauzie* was designed as an easy-to-use CLI tool for fetching access tokens for Keycloak public clients. 
+*Brauzie* was designed as a simple CLI tool for fetching access tokens for Keycloak public clients. 
 Often times when debugging security for your web-applications you need to quickly get the access token from your Identity provider (e.g. Keycloak) and fire a GET/POST request to your backend server using ``curl`` or ``httpie``.
+
+## Features
+* easy-to-use CLI
+* obtains OIDC token via *Authorization Code flow*
+* decodes JWT token
+* can be used for k8s authentication (see [here](k8s-authz.md))
 
 ## Installation
 ```
