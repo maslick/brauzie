@@ -54,3 +54,7 @@ curl -H "Authorization: Bearer $TOKEN" htts://example.com
 cat ~/.brauzie | jq -r '.access_token'
 cat ~/.brauzie | jq -r '.refresh_token'
 ```
+
+## Testing
+* Import [sample-realm.json](sample-realm.json) to your Keycloak instance.
+* Add user/s via Keycloak web console.
