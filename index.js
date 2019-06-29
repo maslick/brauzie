@@ -11,12 +11,14 @@ const fp = require("find-free-port");
 const jwt = require("jws");
 
 
-let kcUrl = process.env.BRAUZIE_KC_URL || "https://auth.maslick.ru";
-let realm = process.env.BRAUZIE_REALM || "brauzie";
-let client_id = process.env.BRAUZIE_CLIENT_ID || "web";
+const kcUrl = process.env.BRAUZIE_KC_URL || "https://auth.maslick.ru";
+const realm = process.env.BRAUZIE_REALM || "brauzie";
+const client_id = process.env.BRAUZIE_CLIENT_ID || "web";
 
-let baseUrl = kcUrl + "/auth/realms/"+ realm + "/protocol/openid-connect";
-const brauzieFile = process.env.HOME + "/.brauzie";
+const baseUrl = kcUrl + "/auth/realms/"+ realm + "/protocol/openid-connect";
+const brauzieFolder = process.env.HOME + "/.brauzie";
+const brauzieFile = brauzieFolder + "/jwt.json";
+const brauzieTokenFile = brauzieFolder + "/id-token.json";
 
 if (argv._[0] === "login") {
     fp(9000, (err, PORT) => {
@@ -40,13 +42,16 @@ if (argv._[0] === "login") {
                 axios.post(baseUrl + "/token", qs.stringify(data))
                     .then(response => {
                         const token = response.data;
-                        console.log(token.access_token);
+                        if (!argv.quite) console.log(token.access_token);
                         const decodedJWT = jwt.decode(token.access_token).payload;
-                        let name = decodedJWT.given_name || decodedJWT.preferred_username;
+                        const decodedIdTokenJWT = jwt.decode(token.id_token).payload;
+                        const name = decodedJWT.given_name || decodedJWT.preferred_username;
 
+                        if (!fs.existsSync(brauzieFolder)) fs.mkdirSync(brauzieFolder);
                         fs.writeFileSync(brauzieFile, JSON.stringify(token, null, 2));
+                        fs.writeFileSync(brauzieTokenFile, JSON.stringify(decodedIdTokenJWT, null, 2));
                         if (argv.silent) {
-                            res.send("" +
+                            res.send(
                                 "<script>\n" +
                                 "    window.close();\n" +
                                 "</script>"
@@ -59,16 +64,16 @@ if (argv._[0] === "login") {
                                 "</p>"
                             );
                         }
-                        if (!argv.debug) process.exit(0);
+                        process.exit(0);
                     })
                     .catch(reason => {
                         console.error("error!!");
-                        res.send("" +
+                        res.send(
                             "<script>\n" +
                             "    window.close();\n" +
                             "</script>"
                         );
-                        if (!argv.debug) process.exit(1);
+                        process.exit(1);
                     });
             }
         });
@@ -77,7 +82,7 @@ if (argv._[0] === "login") {
 }
 else if (argv._[0] === "logout") {
     if (!fs.existsSync(brauzieFile)) {
-        console.log("Cannot logout, you should login first!");
+        console.log("Cannot logout, you must login first :(");
         process.exit(1);
     }
 
@@ -88,8 +93,9 @@ else if (argv._[0] === "logout") {
     };
     axios.post(baseUrl + "/logout", qs.stringify(data))
         .then(response => {
-            console.log("successfully logged out");
+            console.log("Successfully logged out :)");
             fs.unlinkSync(brauzieFile);
+            fs.unlinkSync(brauzieTokenFile);
             process.exit(0);
         })
         .catch(reason => {

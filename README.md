@@ -26,10 +26,11 @@ export BRAUZIE_CLIENT_ID=web
 Then you can login/logout:
 ```
 brauzie login
+brauzie login --quite
 brauzie logout
 ```
 *Brauzie* uses the **Authorization Code flow** (see the OAuth2.0 [specs](https://oauth.net/2/grant-types/authorization-code/)).
-After you execute the ``login`` command, *Brauzie* will open up a browser window where you have to log in to your public OIDC client with username/password. Then it will exchange the ``authorization_code`` for the JWT token and save it to ``~/.brauzie``:
+After you execute the ``login`` command, *Brauzie* will open up a browser window where you will have to login to your public OIDC client with username/password. Then it will exchange the ``authorization_code`` for the JWT token and save it to ``~/.brauzie/jwt.json``:
 ```
 {
   "access_token": "xxxxx.yyyyy.zzzzz",
@@ -43,7 +44,35 @@ After you execute the ``login`` command, *Brauzie* will open up a browser window
   "scope": "profile email"
 }
 ```
-Logout will invalidate the current user session and delete the ``~/.brauzie`` file.
+Unless ``--quite`` is specified, *Brauzie* will output the ``access_token`` to stdout.
+It will also put the decoded ``id_token`` to ``~/.brauzie/id-token.json``:
+```
+{
+  "jti": "fffd0c04-f971-4328-8116-fa4cbabd4978",
+  "exp": 1561839325,
+  "nbf": 0,
+  "iat": 1561839025,
+  "iss": "https://auth.maslick.ru/auth/realms/brauzie",
+  "aud": "web",
+  "sub": "3f6d7531-cf67-4702-a62a-8efcf914d904",
+  "typ": "ID",
+  "azp": "web",
+  "auth_time": 1561839025,
+  "session_state": "c298f25b-60ac-4e55-825a-2a66cbfa0cfc",
+  "acr": "1",
+  "email_verified": true,
+  "name": "Admin Adminović",
+  "groups": [
+    "/cluster-admins"
+  ],
+  "preferred_username": "admin",
+  "given_name": "Admin",
+  "family_name": "Adminović",
+  "email": "admin@admin.si"
+}
+```
+
+Logout will invalidate the current user session and delete the contents of the ``~/.brauzie/`` directory.
 
 
 ## Advanced usage
@@ -58,8 +87,12 @@ cat ~/.brauzie | jq -r '.refresh_token'
 ```
 
 ```
-TOKEN=$(cat ~/.brauzie | jq -r '.access_token') 
+TOKEN=$(cat ~/.brauzie/jwt.json | jq -r '.access_token') 
 http http://httpbin.org/get  "Authorization: Bearer $TOKEN"
+```
+
+```
+echo $(cat ~/.brauzie/id-token.json | jq -r '.name')
 ```
 
 ## Testing
