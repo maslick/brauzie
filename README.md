@@ -55,6 +55,11 @@ cat ~/.brauzie | jq -r '.access_token'
 cat ~/.brauzie | jq -r '.refresh_token'
 ```
 
+```
+TOKEN=$(cat ~/.brauzie | jq -r '.access_token') 
+http http://httpbin.org/get  "Authorization: Bearer $TOKEN"
+```
+
 ## Testing
 * Import [sample-realm.json](sample-realm.json) to your Keycloak instance.
 * Add user/s via Keycloak web console.
