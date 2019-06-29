@@ -3,7 +3,7 @@
 
 [![npm (scoped)](https://img.shields.io/npm/v/@maslick/brauzie.svg)](https://www.npmjs.com/package/@maslick/brauzie)
 [![npm download count](https://img.shields.io/npm/dt/@maslick/brauzie.svg)](https://npmcharts.com/compare/@maslick/brauzie?minimal=true)
-[![npm bundle size](https://img.shields.io/badge/size-3.4kB-green.svg)](https://www.npmjs.com/package/@maslick/brauzie)
+[![npm bundle size](https://img.shields.io/badge/size-4kB-green.svg)](https://www.npmjs.com/package/@maslick/brauzie)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 
@@ -32,6 +32,7 @@ brauzie logout
 *Brauzie* uses the **Authorization Code flow** (see the OAuth2.0 [specs](https://oauth.net/2/grant-types/authorization-code/)).
 After you execute the ``login`` command, *Brauzie* will open up a browser window where you will have to login to your public OIDC client with username/password. Then it will exchange the ``authorization_code`` for the JWT token and save it to ``~/.brauzie/jwt.json``:
 ```
+cat ~/.brauzie/jwt.json
 {
   "access_token": "xxxxx.yyyyy.zzzzz",
   "expires_in": 300,
@@ -47,6 +48,7 @@ After you execute the ``login`` command, *Brauzie* will open up a browser window
 Unless ``--quite`` is specified, *Brauzie* will output the ``access_token`` to stdout.
 It will also put the decoded ``id_token`` to ``~/.brauzie/id-token.json``:
 ```
+cat ~/.brauzie/id-token.json
 {
   "jti": "fffd0c04-f971-4328-8116-fa4cbabd4978",
   "exp": 1561839325,
