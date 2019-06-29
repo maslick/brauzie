@@ -1,11 +1,8 @@
 {
-  "name": "brauzie",
+  "name": "@maslick/brauzie",
   "version": "1.0.0",
-  "description": "",
+  "description": "Awesome CLI for fetching JWT tokens for public OAuth2.0 clients",
   "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
   "author": "Pavel Maslov",
   "license": "MIT",
   "dependencies": {
@@ -16,5 +13,23 @@
     "jws": "^3.2.2",
     "open": "^6.3.0",
     "qs": "^6.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maslick/brauzie.git"
+  },
+  "keywords": [
+    "keycloak",
+    "jwt",
+    "oauth2",
+    "cli",
+    "token"
+  ],
+  "bugs": {
+    "url": "https://github.com/maslick/brauzie/issues"
+  },
+  "homepage": "https://github.com/maslick/brauzie#readme",
+  "scripts": {
+    "start": "node index.js"
   }
 }
