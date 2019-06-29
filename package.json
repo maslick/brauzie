@@ -1,0 +1,20 @@
+{
+  "name": "brauzie",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Pavel Maslov",
+  "license": "MIT",
+  "dependencies": {
+    "yargs": "^13.2.4",
+    "express": "^4.17.0",
+    "axios": "^0.19.0",
+    "find-free-port": "^2.0.0",
+    "jws": "^3.2.2",
+    "open": "^6.3.0",
+    "qs": "^6.7.0"
+  }
+}
