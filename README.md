@@ -29,7 +29,7 @@ First, set your configuration via environment variables:
 # for Direct Access Grants and Authorization Code flow
 export BRAUZIE_KC_URL=https://auth.maslick.ru
 export BRAUZIE_REALM=brauzie
-export BRAUZIE_CLIENT_ID=web
+export BRAUZIE_CLIENT_ID=oidc-k8s
 
 # for Direct Access Grants flow (no web-browser interaction)
 export BRAUZIE_CLIENT_SECRET=aaaaa-bbbbb-ccccc-ddddd-eeeee
@@ -71,10 +71,10 @@ cat ~/.brauzie/id-token.json
   "nbf": 0,
   "iat": 1561839025,
   "iss": "https://auth.maslick.ru/auth/realms/brauzie",
-  "aud": "web",
+  "aud": "oidc-k8s",
   "sub": "3f6d7531-cf67-4702-a62a-8efcf914d904",
   "typ": "ID",
-  "azp": "web",
+  "azp": "oidc-k8s",
   "auth_time": 1561839025,
   "session_state": "c298f25b-60ac-4e55-825a-2a66cbfa0cfc",
   "acr": "1",
@@ -94,7 +94,9 @@ Logout will invalidate the current user session and delete the contents of the `
 
 ## Direct grants
 Initially *Brauzie* supported only the **Authorization Code flow**. This would require a Keycloak client of type ``public``. With this workflow, the user is redirected to the Keycloak login page, which would return an authorization code back to *Brauzie*. Eventually, it will exchange this code for the access token.
+
 For some applications browser interactions may become a burden (CLI tools, automation scripts, etc.) For this you could utilize the **Direct Access Grants** flow. This requires a Keycloak client of type ``confidential``. Confidential clients are a mix of ``public`` and ``bearer-only``. Just like ``bearer-only`` clients they contain a ``client-secret``, and like ``public`` clients they can also issue JWT tokens.
+
 So instead of using the browser (logging in) you could specify ``BRAUZIE_CLIENT_SECRET``, ``BRAUZIE_USERNAME`` and ``BRAUZIE_PASSWORD`` and avoid any interaction with the browser:
 ```
 brauzie login --direct-grant
