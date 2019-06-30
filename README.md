@@ -1,7 +1,7 @@
 # =brauzie=
 
-
 [![npm (scoped)](https://img.shields.io/npm/v/@maslick/brauzie.svg)](https://www.npmjs.com/package/@maslick/brauzie)
+[![Build Status](https://travis-ci.org/maslick/brauzie.svg?branch=master)](https://travis-ci.org/maslick/brauzie)
 [![npm download count](https://img.shields.io/npm/dt/@maslick/brauzie.svg)](https://npmcharts.com/compare/@maslick/brauzie?minimal=true)
 [![npm bundle size](https://img.shields.io/badge/size-4kB-green.svg)](https://www.npmjs.com/package/@maslick/brauzie)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
