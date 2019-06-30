@@ -8,7 +8,7 @@
 
 
 Often times when debugging *security* for your web-applications you need to quickly get the access token from your Identity provider (e.g. Keycloak) and fire a GET/POST request to your backend server using ``curl`` or ``httpie``. Some people use [Postman](https://www.getpostman.com/), some do it manually. Both approaches are time-consuming and nerve-wracking.
-*Brauzie* was designed with an idea of a fast and simple CLI tool for fetching access tokens for Keycloak public clients. 
+*Brauzie* was designed with an idea of a fast and simple CLI tool for fetching access tokens for Keycloak ``public`` and ``confidential`` clients. 
 
 ## Features
 * easy-to-use CLI
