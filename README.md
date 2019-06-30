@@ -32,9 +32,9 @@ export BRAUZIE_REALM=brauzie
 export BRAUZIE_CLIENT_ID=web
 
 # for Direct Access Grants flow (no web-browser interaction)
-export BRAUZIE_CLIENT_SECRET=f4b73a07-fa31-44bf-8513-09a838114b91
-export BRAUZIE_USERNAME=admin
-export BRAUZIE_PASSWORD=admin
+export BRAUZIE_CLIENT_SECRET=aaaaa-bbbbb-ccccc-ddddd-eeeee
+export BRAUZIE_USERNAME=user
+export BRAUZIE_PASSWORD=password
 
 ```
 
