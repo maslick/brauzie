@@ -11,9 +11,13 @@ const fp = require("find-free-port");
 const jwt = require("jws");
 
 
-const kcUrl = process.env.BRAUZIE_KC_URL || "https://auth.maslick.ru";
-const realm = process.env.BRAUZIE_REALM || "brauzie";
-const client_id = process.env.BRAUZIE_CLIENT_ID || "web";
+const kcUrl = process.env.BRAUZIE_KC_URL || "";
+const realm = process.env.BRAUZIE_REALM || "";
+const client_id = process.env.BRAUZIE_CLIENT_ID || "";
+
+const client_secret = process.env.BRAUZIE_CLIENT_SECRET || "";
+const username = process.env.BRAUZIE_USERNAME || "";
+const password = process.env.BRAUZIE_PASSWORD || "";
 
 const baseUrl = kcUrl + "/auth/realms/"+ realm + "/protocol/openid-connect";
 const brauzieFolder = process.env.HOME + "/.brauzie";
@@ -21,64 +25,81 @@ const brauzieFile = brauzieFolder + "/jwt.json";
 const brauzieTokenFile = brauzieFolder + "/id-token.json";
 
 if (argv._[0] === "login") {
-    fp(9000, (err, PORT) => {
-        const authEndpoint = "/helloworld";
-        const redirectUrl = "http://localhost:" + PORT + authEndpoint;
+    if (argv['direct-grant']) {
+        const req = {
+            client_id: client_id,
+            client_secret: client_secret,
+            username: username,
+            password: password,
+            grant_type: 'password',
+            scope: 'openid'
+        };
 
-        (async () => {
-            await open(baseUrl + '/auth?scope=openid&client_id=' + client_id + '&response_type=code&redirect_uri=' + redirectUrl);
-        })();
+        axios.post(baseUrl + "/token", qs.stringify(req))
+            .then(response => {
+                const jwt = saveTokenHandler(response.data);
+                process.exit(0);
+            })
+            .catch(reason => {
+                console.error("Error while fetching token :(");
+                console.log(reason);
+                process.exit(1);
+            });
+    }
+    else {
+        fp(9000, (err, PORT) => {
+            const authEndpoint = "/helloworld";
+            const redirectUrl = "http://localhost:" + PORT + authEndpoint;
 
-        app.get(authEndpoint, (req, res) => {
-            const code = req.query.code;
-            if (code) {
-                const data = {
-                    code: code,
-                    client_id: client_id,
-                    grant_type: 'authorization_code',
-                    redirect_uri: redirectUrl
-                };
+            (async () => {
+                await open(baseUrl + '/auth?scope=openid&client_id=' + client_id + '&response_type=code&redirect_uri=' + redirectUrl);
+            })();
 
-                axios.post(baseUrl + "/token", qs.stringify(data))
-                    .then(response => {
-                        const token = response.data;
-                        if (!argv.quite) console.log(token.access_token);
-                        const decodedJWT = jwt.decode(token.access_token).payload;
-                        const decodedIdTokenJWT = jwt.decode(token.id_token).payload;
-                        const name = decodedJWT.given_name || decodedJWT.preferred_username;
+            app.get(authEndpoint, (req, res) => {
+                const code = req.query.code;
+                if (code) {
+                    const req = {
+                        code: code,
+                        client_id: client_id,
+                        grant_type: 'authorization_code',
+                        redirect_uri: redirectUrl,
+                        client_secret: client_secret
+                    };
 
-                        if (!fs.existsSync(brauzieFolder)) fs.mkdirSync(brauzieFolder);
-                        fs.writeFileSync(brauzieFile, JSON.stringify(token, null, 2));
-                        fs.writeFileSync(brauzieTokenFile, JSON.stringify(decodedIdTokenJWT, null, 2));
-                        if (argv.silent) {
+                    axios.post(baseUrl + "/token", qs.stringify(req))
+                        .then(response => {
+                            const jwt = saveTokenHandler(response.data);
+                            if (argv.silent) {
+                                res.send(
+                                    "<script>\n" +
+                                    "    window.close();\n" +
+                                    "</script>"
+                                );
+                            } else {
+                                res.send(
+                                    "<h1>Hi " + (jwt.given_name || jwt.preferred_username) + "! This is ~brauzie :)</h1>" +
+                                    "<p>You have been successfully authenticated. " +
+                                    "Your access token was saved to ~/.brauzie. You can close me now :)" +
+                                    "</p>"
+                                );
+                            }
+                            process.exit(0);
+                        })
+                        .catch(reason => {
+                            console.error("Error while exchanging code for JWT token :(");
+                            console.error(reason);
                             res.send(
                                 "<script>\n" +
                                 "    window.close();\n" +
                                 "</script>"
                             );
-                        } else {
-                            res.send(
-                                "<h1>Hi " + name + "! This is ~brauzie :)</h1>" +
-                                "<p>You have been successfully authenticated. " +
-                                "Your access token was saved to ~/.brauzie. You can close me now :)" +
-                                "</p>"
-                            );
-                        }
-                        process.exit(0);
-                    })
-                    .catch(reason => {
-                        console.error("error!!");
-                        res.send(
-                            "<script>\n" +
-                            "    window.close();\n" +
-                            "</script>"
-                        );
-                        process.exit(1);
-                    });
-            }
+                            process.exit(1);
+                        });
+                }
+            });
+            app.listen(PORT)
         });
-        app.listen(PORT)
-    });
+    }
 }
 else if (argv._[0] === "logout") {
     if (!fs.existsSync(brauzieFile)) {
@@ -87,11 +108,12 @@ else if (argv._[0] === "logout") {
     }
 
     const refreshToken = JSON.parse(fs.readFileSync(brauzieFile)).refresh_token;
-    const data = {
+    const req = {
         client_id: client_id,
-        refresh_token: refreshToken
+        refresh_token: refreshToken,
+        client_secret: client_secret
     };
-    axios.post(baseUrl + "/logout", qs.stringify(data))
+    axios.post(baseUrl + "/logout", qs.stringify(req))
         .then(response => {
             console.log("Successfully logged out :)");
             fs.unlinkSync(brauzieFile);
@@ -100,8 +122,19 @@ else if (argv._[0] === "logout") {
         })
         .catch(reason => {
             console.log("Could not logout :(");
+            console.log(reason);
             process.exit(1);
         });
 }
 
+function saveTokenHandler(token) {
+    if (!argv.quite) console.log(token.access_token);
+    const decodedJWT = jwt.decode(token.access_token).payload;
+    const decodedIdTokenJWT = jwt.decode(token.id_token).payload;
+
+    if (!fs.existsSync(brauzieFolder)) fs.mkdirSync(brauzieFolder);
+    fs.writeFileSync(brauzieFile, JSON.stringify(token, null, 2));
+    fs.writeFileSync(brauzieTokenFile, JSON.stringify(decodedIdTokenJWT, null, 2));
+    return decodedIdTokenJWT;
+}
 
