@@ -13,6 +13,7 @@ Often times when debugging *security* for your web-applications you need to quic
 ## Features
 * easy-to-use CLI
 * obtains OIDC token via *Authorization Code flow*
+* supports confidential clients (*Authorization Code* and *Direct Access Grants* flows) - no web-browser interaction
 * decodes JWT token
 * tested with Keycloak
 * can be used for k8s authentication (see [here](k8s-authz.md))
@@ -25,15 +26,23 @@ npm i -g @maslick/brauzie
 ## Usage
 First, set your configuration via environment variables:
 ```bash
-export BRAUZIE_KC_URL=http://auth.maslick.ru
+# for Direct Access Grants and Authorization Code flow
+export BRAUZIE_KC_URL=https://auth.maslick.ru
 export BRAUZIE_REALM=brauzie
 export BRAUZIE_CLIENT_ID=web
+
+# for Direct Access Grants flow (no web-browser interaction)
+export BRAUZIE_CLIENT_SECRET=f4b73a07-fa31-44bf-8513-09a838114b91
+export BRAUZIE_USERNAME=admin
+export BRAUZIE_PASSWORD=admin
+
 ```
 
 Then you can login/logout:
 ```bash
 brauzie login
 brauzie login --quite
+brauzie login --direct-grant
 brauzie logout
 ```
 *Brauzie* uses the **Authorization Code flow** (see the OAuth2.0 [specs](https://oauth.net/2/grant-types/authorization-code/)).
@@ -83,7 +92,14 @@ cat ~/.brauzie/id-token.json
 
 Logout will invalidate the current user session and delete the contents of the ``~/.brauzie/`` directory.
 
-
+## Direct grants
+Initially *Brauzie* supported only the **Authorization Code flow**. This would require a Keycloak client of type ``public``. With this workflow, the user is redirected to the Keycloak login page, which would return an authorization code back to *Brauzie*. Eventually, it will exchange this code for the access token.
+For some applications browser interactions may become a burden (CLI tools, automation scripts, etc.) For this you could utilize the **Direct Access Grants** flow. This requires a Keycloak client of type ``confidential``. Confidential clients are a mix of ``public`` and ``bearer-only``. Just like ``bearer-only`` clients they contain a ``client-secret``, and like ``public`` clients they can also issue JWT tokens.
+So instead of using the browser (logging in) you could specify ``BRAUZIE_CLIENT_SECRET``, ``BRAUZIE_USERNAME`` and ``BRAUZIE_PASSWORD`` and avoid any interaction with the browser:
+```
+brauzie login --direct-grant
+```
+ 
 ## Advanced usage
 ```bash
 export TOKEN=`brauzie login`
@@ -107,3 +123,4 @@ echo $(cat ~/.brauzie/id-token.json | jq -r '.name')
 ## Testing
 * Import [sample-realm.json](sample-realm.json) to your Keycloak instance.
 * Add user/s via Keycloak web console.
+* If you intend to use *Brauzie* for k8s auth/authz, put the user in question to one of the groups: ``cluster-admins`` or ``cluster-users``.
