@@ -11,7 +11,7 @@ const fp = require("find-free-port");
 const jwt = require("jws");
 
 
-const kcUrl = process.env.BRAUZIE_KC_URL || "";
+const kcUrl = process.env.BRAUZIE_KC_URL || "https://google.com";
 const realm = process.env.BRAUZIE_REALM || "";
 const client_id = process.env.BRAUZIE_CLIENT_ID || "";
 
@@ -40,20 +40,27 @@ if (argv._[0] === "login") {
                 const jwt = saveTokenHandler(response.data);
                 process.exit(0);
             })
-            .catch(reason => {
+            .catch(error => {
                 console.error("Error while fetching token :(");
-                console.log(reason);
+                const errMsg = error.response.data;
+                if (errMsg) console.error(JSON.stringify(errMsg));
                 process.exit(1);
             });
     }
     else {
         fp(9000, (err, PORT) => {
-            const authEndpoint = "/helloworld";
+            const authEndpoint = "/brauzie";
             const redirectUrl = "http://localhost:" + PORT + authEndpoint;
 
             (async () => {
                 await open(baseUrl + '/auth?scope=openid&client_id=' + client_id + '&response_type=code&redirect_uri=' + redirectUrl);
             })();
+
+            let server = app.listen(PORT);
+            setTimeout(() => {
+                server.close();
+                console.log("Timeout reached :(");
+            }, 2 * 1000 * 60);
 
             app.get(authEndpoint, (req, res) => {
                 const code = req.query.code;
@@ -83,21 +90,23 @@ if (argv._[0] === "login") {
                                     "</p>"
                                 );
                             }
+                            server.close();
                             process.exit(0);
                         })
-                        .catch(reason => {
+                        .catch(error => {
                             console.error("Error while exchanging code for JWT token :(");
-                            console.error(reason);
+                            const errMsg = error.response.data;
+                            if (errMsg) console.error(JSON.stringify(errMsg));
                             res.send(
                                 "<script>\n" +
                                 "    window.close();\n" +
                                 "</script>"
                             );
+                            server.close();
                             process.exit(1);
                         });
                 }
             });
-            app.listen(PORT)
         });
     }
 }
@@ -120,9 +129,10 @@ else if (argv._[0] === "logout") {
             fs.unlinkSync(brauzieTokenFile);
             process.exit(0);
         })
-        .catch(reason => {
+        .catch(error => {
             console.log("Could not logout :(");
-            console.log(reason);
+            const errMsg = error.response.data;
+            if (errMsg) console.error(JSON.stringify(errMsg));
             process.exit(1);
         });
 }
