@@ -75,7 +75,8 @@ if (argv._[0] === "login") {
 
                     axios.post(baseUrl + "/token", qs.stringify(req))
                         .then(response => {
-                            const jwt = saveTokenHandler(response.data);
+                            const token = response.data;
+                            const jowt = saveTokenHandler(token);
                             if (argv.silent) {
                                 res.send(
                                     "<script>\n" +
@@ -84,10 +85,17 @@ if (argv._[0] === "login") {
                                 );
                             } else {
                                 res.send(
-                                    "<h1>Hi " + (jwt.given_name || jwt.preferred_username) + "! This is ~brauzie :)</h1>" +
-                                    "<p>You have been successfully authenticated. " +
-                                    "Your access token was saved to ~/.brauzie. You can close me now :)" +
-                                    "</p>"
+                                    "<div style='max-width: 800px; margin: 0 auto;'>" +
+                                      "<h1 style='text-align: center; padding: 20px; background: #f2f2f2;'>" +
+                                        "Hi " + (jowt.given_name || jowt.preferred_username) + "! This is ~brauzie :)" +
+                                      "</h1>" +
+                                      "<p>You have been successfully authenticated. <br>" +
+                                        "Your JWT token was saved to ~/.brauzie/jwt.json. <br>" +
+                                        "Its json representation is pasted below. <br>" +
+                                        "You can close me now :)" +
+                                      "</p>" +
+                                      "<pre>" + JSON.stringify(jwt.decode(token["access_token"]).payload, null, 2) + "</pre>" +
+                                    "</div>"
                                 );
                             }
                             server.close();
