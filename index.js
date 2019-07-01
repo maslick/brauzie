@@ -86,15 +86,17 @@ if (argv._[0] === "login") {
                             } else {
                                 res.send(
                                     "<div style='max-width: 800px; margin: 0 auto;'>" +
-                                      "<h1 style='text-align: center; padding: 20px; background: #f2f2f2;'>" +
+                                      "<div style='font-family: monospace;text-align: center;padding: 20px;font-size: 32px;background: #f2f2f2;font-weight: bold;'>" +
                                         "Hi " + (jowt.given_name || jowt.preferred_username) + "! This is ~brauzie :)" +
-                                      "</h1>" +
-                                      "<p>You have been successfully authenticated. <br>" +
+                                      "</div>" +
+                                      "<div style='font-family: monospace; padding: 20px 20px; background: #d9d9d9;'>" +
+                                        "You have been successfully authenticated. <br>" +
                                         "Your JWT token was saved to ~/.brauzie/jwt.json. <br>" +
                                         "Its json representation is pasted below. <br>" +
-                                        "You can close me now :)" +
-                                      "</p>" +
-                                      "<pre>" + JSON.stringify(jwt.decode(token["access_token"]).payload, null, 2) + "</pre>" +
+                                      "</div>" +
+                                      "<div style='white-space: pre; font-family: monospace; padding: 20px; background: #f0f8ff;\n'>" +
+                                        JSON.stringify(jwt.decode(token["access_token"]).payload, null, 2) +
+                                      "</div>" +
                                     "</div>"
                                 );
                             }
@@ -155,4 +157,3 @@ function saveTokenHandler(token) {
     fs.writeFileSync(brauzieTokenFile, JSON.stringify(decodedIdTokenJWT, null, 2));
     return decodedIdTokenJWT;
 }
-
